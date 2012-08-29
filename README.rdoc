@@ -1,0 +1,9 @@
+= Installation & Running
+
+  git clone https://github.com/infochimps/chiat_day_innovation_matcher.git
+  cd chiat_day_innovation_matcher
+  bundle install
+  RACK_ENV=development ruby innovation_matcher.rb
+
+
+
