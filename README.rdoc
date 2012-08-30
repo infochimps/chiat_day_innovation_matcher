@@ -7,7 +7,13 @@
 
 = Usage
 
-Create a match
+== Create a match
+
+Returns an array of innovations matching given parameters +dob+ and
++hometown+.  Also returns a +match_id+ that can be used to retrieve
+this match later.
+
+Example:
 
   $ curl -s -X POST http://localhost:4567/matches -d '{"dob": "1983-05-23", "hometown": "New York, NY"}'
   {
@@ -22,7 +28,11 @@ Create a match
 	"innovation_date": "8/14/1877"
     ...
 
-Retrieve a created match using a given +match_id+
+== Retrieve a match
+
+Returns an array of innovations from a previously returned +match_id+.
+
+Example:
 
   $ curl -s -X GET http://localhost:4567/matches/6b73f010-d469-012f-ad21-002219342852
   {
