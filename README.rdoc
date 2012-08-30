@@ -1,9 +1,38 @@
 = Installation & Running
 
-  git clone https://github.com/infochimps/chiat_day_innovation_matcher.git
-  cd chiat_day_innovation_matcher
-  bundle install
-  RACK_ENV=development ruby innovation_matcher.rb
+  $ git clone https://github.com/infochimps/chiat_day_innovation_matcher.git
+  $ cd chiat_day_innovation_matcher
+  $ bundle install
+  $ RACK_ENV=development ruby innovation_matcher.rb
 
+= Usage
 
+Create a match
 
+  $ curl -s -X POST http://localhost:4567/matches -d '{"dob": "1983-05-23", "hometown": "New York, NY"}'
+  {
+    "match_id": "6b73f010-d469-012f-ad21-002219342852",
+    "innovations": [
+      {
+	"id": "280",
+	"type": "Automotive",
+	"name": "internal combustion engine",
+	"photo": "http://www.flickr.com/photos/ell-r-brown/6050366599/",
+	"innovator_name": "NICOLAUS OTTO",
+	"innovation_date": "8/14/1877"
+    ...
+
+Retrieve a created match using a given +match_id+
+
+  $ curl -s -X GET http://localhost:4567/matches/6b73f010-d469-012f-ad21-002219342852
+  {
+    "match_id": "6b73f010-d469-012f-ad21-002219342852",
+    "innovations": [
+      {
+	"id": "280",
+	"type": "Automotive",
+	"name": "internal combustion engine",
+	"photo": "http://www.flickr.com/photos/ell-r-brown/6050366599/",
+	"innovator_name": "NICOLAUS OTTO",
+	"innovation_date": "8/14/1877",
+  ...

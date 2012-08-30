@@ -85,7 +85,7 @@ end
 
 get "/matches/:uuid" do
   uuid = params["uuid"]
-  pretty_json(retrieve_match(uuid)
+  pretty_json(retrieve_match(uuid))
 end
 
 error 400 do
