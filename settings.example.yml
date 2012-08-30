@@ -1,0 +1,7 @@
+---
+
+mysql:
+  host: localhost
+  username: ~
+  password: ~
+  database: nissan_garage_connect

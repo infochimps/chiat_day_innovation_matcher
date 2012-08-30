@@ -2,29 +2,52 @@ require 'sinatra'
 require 'json'
 require 'mysql'
 require 'time'
+require 'yaml'
+require 'uuid'
+
+SETTINGS = YAML.load(File.read(File.expand_path('../settings.yml', __FILE__)))
 
 set :show_exceptions, false
 
 def db
-  @db ||= Mysql.connect(ENV["MYSQL_HOST"], ENV["MYSQL_USER"], ENV["MYSQL_PASSWORD"], ENV["MYSQL_DATABASE"])
+  @db ||= Mysql.connect(SETTINGS["mysql"]["host"], SETTINGS["mysql"]["username"], SETTINGS["mysql"]["password"], SETTINGS["mysql"]["database"])
 end
 
 def find_match dob
-  # { "id" => 11, "innovation" => "motion picture projector", "innovator" => "Fred H. Meyer",
-  #   "date" => Time.parse("1972-09-04"), "patent_number" => "US3642357",
-  #   "link_to_patent" => "http://www.google.com/patents/US3642357",
-  #   "notes" => "This motion picture viewer projected movies onto a screen by cycling the film forward or backward at a set speed."
-  # }
-  db.query("SELECT * FROM innovations LIMIT 3")
+  [].tap do |innovations|
+    result_set = db.query("SELECT * FROM innovations LIMIT 3")
+    innovation = result_set.fetch_hash()
+    while innovation
+      innovations << innovation
+      innovation = result_set.fetch_hash()
+    end
+  end
 end
 
 def save_match user_data, innovations
-  innovations
-  # {"id" => 123}.merge("innovation" => innovation, "user_data" => user_data)
+  uuid = UUID.generate
+  innovations.each do |innovation|
+    db.query("INSERT INTO matches (match_id, innovation_id) VALUES (\"#{uuid}\", #{innovation['id']})")
+  end
+  {
+    "match_id"    =>  uuid,
+    "innovations" => innovations,
+    "user_data"   => user_data
+  }
 end
 
-def retrieve_match id
-  db.query("SELECT * FROM matches WHERE match_id=#{id.to_i}")
+def retrieve_match uuid
+  result_set = db.query("SELECT i.* FROM matches m, innovations i WHERE m.innovation_id = i.id AND m.match_id = \"#{Mysql.quote(uuid)}\"")
+  innovations = []
+  innovation = result_set.fetch_hash
+  while innovation
+    innovations << innovation
+    innovation = result_set.fetch_hash
+  end
+  {
+    "match_id"    => uuid,
+    "innovations" => innovations
+  }
 end
 
 def pretty_json obj
@@ -34,6 +57,18 @@ end
 
 before do
   content_type "application/json"
+end
+
+get "/matches" do
+  begin
+    user_data = JSON.parse(request.body.read)
+  rescue JSON::ParserError => e
+    return 400
+  end
+  
+  return 400 unless user_data.is_a?(Hash) && user_data["dob"]
+  
+  pretty_json(find_match(user_data))
 end
 
 post "/matches" do
@@ -48,8 +83,9 @@ post "/matches" do
   pretty_json(save_match(user_data, find_match(user_data)))
 end
 
-get "/matches/:id" do
-  pretty_json(retrieve_match(request.params[:id]))
+get "/matches/:uuid" do
+  uuid = params["uuid"]
+  pretty_json(retrieve_match(uuid)
 end
 
 error 400 do
