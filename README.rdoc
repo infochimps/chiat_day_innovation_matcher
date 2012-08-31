@@ -71,13 +71,18 @@ Example:
     "match_id": "6b73f010-d469-012f-ad21-002219342852",
     "innovations": [
       {
-	"id": "280",
-	"type": "Automotive",
-	"name": "internal combustion engine",
-	"photo": "http://www.flickr.com/photos/ell-r-brown/6050366599/",
-	"innovator_name": "NICOLAUS OTTO",
-	"innovation_date": "8/14/1877"
-    ...
+        "id": "280",
+        "type": "Automotive",
+        "name": "internal combustion engine",
+        "photo": "http://www.flickr.com/photos/ell-r-brown/6050366599/",
+        "innovator_name": "NICOLAUS OTTO",
+        "innovation_date": "8/14/1877"
+        ...
+      },
+      { ... },
+      ...
+    ]
+  }
 
 == Retrieve a match
 
@@ -90,10 +95,15 @@ Example:
     "match_id": "6b73f010-d469-012f-ad21-002219342852",
     "innovations": [
       {
-	"id": "280",
-	"type": "Automotive",
-	"name": "internal combustion engine",
-	"photo": "http://www.flickr.com/photos/ell-r-brown/6050366599/",
-	"innovator_name": "NICOLAUS OTTO",
-	"innovation_date": "8/14/1877",
-  ...
+        "id": "280",
+        "type": "Automotive",
+        "name": "internal combustion engine",
+        "photo": "http://www.flickr.com/photos/ell-r-brown/6050366599/",
+        "innovator_name": "NICOLAUS OTTO",
+        "innovation_date": "8/14/1877",
+        ...
+      },
+      { ... },
+      ...
+    ]
+  }
