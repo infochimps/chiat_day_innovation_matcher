@@ -2,6 +2,14 @@
 
 == Installation
 
+First make sure you've installed
+
+  - Git[http://git-scm.com/]
+  - Ruby
+  - Bundler[http://gembundler.com/]
+
+And then
+
   $ git clone https://github.com/infochimps/chiat_day_innovation_matcher.git
   $ cd chiat_day_innovation_matcher
   $ bundle install
