@@ -103,4 +103,3 @@ end
 error do
   pretty_json({:status => "error", :message => "Unknown error"})
 end
-
