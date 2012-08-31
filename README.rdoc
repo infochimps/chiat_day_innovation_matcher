@@ -40,7 +40,14 @@ You can also run it with Unicorn
 
 which is what you should do in production, after you've tweaked the
 <tt>unicorn-conf.rb</tt> file.
-  
+
+Make sure that the user you're running this +unicorn+ with can write
+to the directories you point at in the <tt>unicorn-conf.rb</tt> file.
+If you're using the example <tt>unicorn-conf.rb</tt> file then you
+might want to run a command like
+
+  $ chmod -R www-data:www-data log tmp
+
 = Usage
 
 == Create a match
