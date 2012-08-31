@@ -1,2 +1,3 @@
 settings.yml
 db/*
+unicorn-conf.rb
