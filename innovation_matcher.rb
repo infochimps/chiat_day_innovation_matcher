@@ -13,15 +13,25 @@ def db
   @db ||= Mysql.connect(SETTINGS["mysql"]["host"], SETTINGS["mysql"]["username"], SETTINGS["mysql"]["password"], SETTINGS["mysql"]["database"])
 end
 
-def find_match dob
+def find_match user_data
+  dob = user_data["dob"]
   [].tap do |innovations|
-    result_set = db.query("SELECT * FROM innovations LIMIT 3")
-    innovation = result_set.fetch_hash()
+    result_set = db.query("SELECT * FROM innovations ORDER BY ABS(innovation_date - DATE(\"#{Mysql.quote(dob)}\")) LIMIT 3")
+    innovation = utf8ize(result_set.fetch_hash())
     while innovation
       innovations << innovation
-      innovation = result_set.fetch_hash()
+      innovation = utf8ize(result_set.fetch_hash())
     end
   end
+end
+
+def utf8ize hash
+  return hash unless hash
+  hash.keys.each do |key|
+    val = hash[key]
+    hash[key] = val.force_encoding('utf-8')
+  end
+  hash
 end
 
 def save_match user_data, innovations
@@ -39,10 +49,10 @@ end
 def retrieve_match uuid
   result_set = db.query("SELECT i.* FROM matches m, innovations i WHERE m.innovation_id = i.id AND m.match_id = \"#{Mysql.quote(uuid)}\"")
   innovations = []
-  innovation = result_set.fetch_hash
+  innovation = utf8ize(result_set.fetch_hash)
   while innovation
     innovations << innovation
-    innovation = result_set.fetch_hash
+    innovation = utf8ize(result_set.fetch_hash)
   end
   {
     "match_id"    => uuid,
@@ -51,6 +61,7 @@ def retrieve_match uuid
 end
 
 def pretty_json obj
+  
   obj.to_json + "\n"
 end
 
