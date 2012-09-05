@@ -17,7 +17,7 @@ def find_match user_data
   dob = (user_data["dob"] or return)
   [].tap do |innovations|
     begin
-      result_set = db.query("SELECT * FROM innovations ORDER BY ABS(innovation_date - DATE(\"#{Mysql.quote(dob)}\")) LIMIT 3")
+      result_set = db.query("SELECT * FROM innovations WHERE innovation_date != \"0000-00-00\" ORDER BY ABS(DAYOFYEAR(DATE(\"#{Mysql.quote(dob)}\")) - DAYOFYEAR(innovation_date)) LIMIT 3")
     rescue Mysql::Error => e
       return
     end
