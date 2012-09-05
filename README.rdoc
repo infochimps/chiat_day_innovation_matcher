@@ -64,9 +64,12 @@ Returns an array of innovations matching given parameters +dob+ and
 +hometown+.  Also returns a +match_id+ that can be used to retrieve
 this match later.
 
+If the +name+ parameter is given, that name will be returned when
+asking for the match later.
+
 Example:
 
-  $ curl -s -X POST http://localhost:4567/matches -d '{"dob": "1983-05-23", "hometown": "New York, NY"}'
+  $ curl -s -X POST http://localhost:4567/matches -d '{"dob": "1983-05-23", "hometown": "New York, NY", "name": "Dhruv Bansal"}'
   {
     "match_id": "6b73f010-d469-012f-ad21-002219342852",
     "innovations": [
@@ -81,12 +84,20 @@ Example:
       },
       { ... },
       ...
-    ]
+    ],
+    "user_data": {
+      "dob": "1983-05-23",
+      "hometown": "New York, NY",
+      "name": "Dhruv Bansal"
+    }
   }
 
 == Retrieve a match
 
 Returns an array of innovations from a previously returned +match_id+.
+
+If a +name+ was passed in with the original match, it will be
+available as the +fb_user+ value in the returned +innovation+ object.
 
 Example:
 
@@ -102,6 +113,7 @@ Example:
         "innovator_name": "NICOLAUS OTTO",
         "innovation_date": "8/14/1877",
         ...
+        "fb_user": "Dhruv Bansal"
       },
       { ... },
       ...

@@ -14,9 +14,13 @@ def db
 end
 
 def find_match user_data
-  dob = user_data["dob"]
+  dob = (user_data["dob"] or return)
   [].tap do |innovations|
-    result_set = db.query("SELECT * FROM innovations ORDER BY ABS(innovation_date - DATE(\"#{Mysql.quote(dob)}\")) LIMIT 3")
+    begin
+      result_set = db.query("SELECT * FROM innovations ORDER BY ABS(innovation_date - DATE(\"#{Mysql.quote(dob)}\")) LIMIT 3")
+    rescue Mysql::Error => e
+      return
+    end
     innovation = utf8ize(result_set.fetch_hash())
     while innovation
       innovations << innovation
@@ -35,9 +39,10 @@ def utf8ize hash
 end
 
 def save_match user_data, innovations
+  fb_user = user_data.fetch("name", '')
   uuid = UUID.generate
   innovations.each do |innovation|
-    db.query("INSERT INTO matches (match_id, innovation_id) VALUES (\"#{uuid}\", #{innovation['id']})")
+    db.query("INSERT INTO matches (match_id, innovation_id, fb_user) VALUES (\"#{uuid}\", #{innovation['id']}, \"#{Mysql.quote(fb_user)}\")")
   end
   {
     "match_id"    =>  uuid,
@@ -47,7 +52,7 @@ def save_match user_data, innovations
 end
 
 def retrieve_match uuid
-  result_set = db.query("SELECT i.* FROM matches m, innovations i WHERE m.innovation_id = i.id AND m.match_id = \"#{Mysql.quote(uuid)}\"")
+  result_set = db.query("SELECT i.*, m.fb_user FROM matches m, innovations i WHERE m.innovation_id = i.id AND m.match_id = \"#{Mysql.quote(uuid)}\"")
   innovations = []
   innovation = utf8ize(result_set.fetch_hash)
   while innovation
@@ -61,7 +66,6 @@ def retrieve_match uuid
 end
 
 def pretty_json obj
-  
   obj.to_json + "\n"
 end
 
@@ -90,8 +94,10 @@ post "/matches" do
   end
   
   return 400 unless user_data.is_a?(Hash) && user_data["dob"]
+  match = find_match(user_data)
+  return 400 unless match
   
-  pretty_json(save_match(user_data, find_match(user_data)))
+  pretty_json(save_match(user_data, match))
 end
 
 get "/matches/:uuid" do
@@ -100,7 +106,7 @@ get "/matches/:uuid" do
 end
 
 error 400 do
-  pretty_json({:status => "error", :code => 400, :message => "The POST body must contain a valid JSON hash containing the key 'dob'"})
+  pretty_json({:status => "error", :code => 400, :message => "The POST body must contain a valid JSON hash with a key 'dob' mapped to a valid date in a MySQL parseable format like '2012-01-01'."})
 end
 
 error 404 do
