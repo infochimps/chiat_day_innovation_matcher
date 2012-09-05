@@ -66,17 +66,15 @@ def retrieve_match uuid
 end
 
 def pretty_json obj
+  
   output = obj.to_json
   if params['callback']
+    content_type "application/javascript"
     [params['callback'], '(', output, ")\n"].join('')
   else
+    content_type "application/json"
     output + "\n"
   end
-end
-
-
-before do
-  content_type "application/json"
 end
 
 get "/matches" do

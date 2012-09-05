@@ -119,3 +119,31 @@ Example:
       ...
     ]
   }
+
+== JSONP & Callbacks
+
+All URLs will accept the +callback+ parameter to wrap the JSON
+response in a JavaScript callback suitable for JSON-P.
+
+Example:
+
+  $ curl -s -X GET http://localhost:4567/matches/6b73f010-d469-012f-ad21-002219342852?callback=hello
+  hello({
+    "match_id": "6b73f010-d469-012f-ad21-002219342852",
+    "innovations": [
+      {
+        "id": "280",
+        "type": "Automotive",
+        "name": "internal combustion engine",
+        "photo": "http://www.flickr.com/photos/ell-r-brown/6050366599/",
+        "innovator_name": "NICOLAUS OTTO",
+        "innovation_date": "8/14/1877",
+        ...
+        "fb_user": "Dhruv Bansal"
+      },
+      { ... },
+      ...
+    ]
+  })
+
+
