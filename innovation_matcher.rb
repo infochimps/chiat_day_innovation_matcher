@@ -66,7 +66,12 @@ def retrieve_match uuid
 end
 
 def pretty_json obj
-  obj.to_json + "\n"
+  output = obj.to_json
+  if params['callback']
+    [params['callback'], '(', output, ")\n"].join('')
+  else
+    output + "\n"
+  end
 end
 
 
